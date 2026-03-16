@@ -1,0 +1,672 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0f0f1a;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #2a2a3e;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+header h1 {
+  font-size: 1.3rem;
+  color: #4fc3f7;
+  cursor: pointer;
+}
+
+nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+nav button {
+  background: #1a1a2e;
+  border: 1px solid #3a3a4e;
+  color: #e0e0e0;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+nav button:hover {
+  background: #2a2a3e;
+}
+
+nav button.active {
+  background: #4fc3f7;
+  color: #0f0f1a;
+  border-color: #4fc3f7;
+}
+
+/* Buttons */
+button {
+  background: #1a1a2e;
+  border: 1px solid #3a3a4e;
+  color: #e0e0e0;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.15s;
+}
+
+button:hover {
+  background: #2a2a3e;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #4fc3f7;
+  color: #0f0f1a;
+  border-color: #4fc3f7;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: #81d4fa;
+}
+
+.btn-danger {
+  background: #ef5350;
+  border-color: #ef5350;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #f44336;
+}
+
+.btn-small {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+.btn-back {
+  margin-bottom: 1rem;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+th, td {
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+  border-bottom: 1px solid #1a1a2e;
+}
+
+th {
+  background: #1a1a2e;
+  color: #aaa;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  position: sticky;
+  top: 0;
+}
+
+th:hover {
+  color: #4fc3f7;
+}
+
+tr.clickable {
+  cursor: pointer;
+}
+
+tr.clickable:hover {
+  background: #1a1a2e;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  max-height: 60vh;
+  overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid #2a2a3e;
+}
+
+/* Price colors */
+.price-up { color: #ef5350; }
+.price-down { color: #66bb6a; }
+.price-min { color: #66bb6a; }
+.price-max { color: #ef5350; }
+
+/* Paste Import */
+.paste-import {
+  margin-bottom: 1.5rem;
+}
+
+.paste-import textarea {
+  width: 100%;
+  background: #1a1a2e;
+  border: 1px solid #3a3a4e;
+  color: #e0e0e0;
+  padding: 0.8rem;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  resize: vertical;
+  margin: 0.5rem 0;
+}
+
+.paste-import textarea:focus {
+  outline: none;
+  border-color: #4fc3f7;
+}
+
+.paste-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.preview-table {
+  margin-top: 1rem;
+  border: 1px solid #2a2a3e;
+  border-radius: 8px;
+  overflow: hidden;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.error {
+  color: #ef5350;
+  margin: 0.5rem 0;
+}
+
+/* Card List */
+.card-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.total-cost {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #4fc3f7;
+}
+
+.search-input {
+  width: 100%;
+  background: #1a1a2e;
+  border: 1px solid #3a3a4e;
+  color: #e0e0e0;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #4fc3f7;
+}
+
+.card-name {
+  font-weight: 500;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Card Detail */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.8rem;
+  margin: 1rem 0;
+}
+
+.stat {
+  background: #1a1a2e;
+  border: 1px solid #2a2a3e;
+  border-radius: 8px;
+  padding: 0.8rem;
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #888;
+  margin-bottom: 0.3rem;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.stat-breakdown {
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+.price-history-table {
+  margin-top: 1.5rem;
+}
+
+.price-history-table h3 {
+  margin-bottom: 0.5rem;
+}
+
+/* Price Chart */
+.price-chart {
+  margin: 1rem 0;
+}
+
+.price-chart h3 {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+.no-data {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Summary */
+.summary-chart {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #1a1a2e;
+  border-radius: 8px;
+  border: 1px solid #2a2a3e;
+}
+
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.summary-stats {
+  display: flex;
+  gap: 0.8rem;
+  align-items: baseline;
+}
+
+.summary-total {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #4fc3f7;
+}
+
+/* Data Sync */
+.data-sync {
+  margin-bottom: 1.5rem;
+}
+
+.data-info {
+  color: #888;
+  margin: 0.5rem 0 1rem;
+}
+
+.sync-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sync-group h3 {
+  font-size: 0.85rem;
+  color: #aaa;
+  margin-bottom: 0.5rem;
+}
+
+.sync-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.sync-group h3 {
+  width: 100%;
+}
+
+/* Card list controls */
+.card-list-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
+}
+
+.card-list-controls .search-input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.btn-toggle {
+  white-space: nowrap;
+  font-size: 0.8rem;
+}
+
+.btn-toggle.active {
+  background: #4fc3f7;
+  color: #0f0f1a;
+  border-color: #4fc3f7;
+}
+
+/* Winners */
+.winners {
+  margin-bottom: 1.5rem;
+}
+
+.winners h2 {
+  margin-bottom: 1rem;
+}
+
+.winners-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.winner-section {
+  background: #1a1a2e;
+  border: 1px solid #2a2a3e;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.winner-section h3 {
+  font-size: 0.9rem;
+  color: #4fc3f7;
+  margin-bottom: 0.3rem;
+}
+
+.winner-desc {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 0.8rem;
+}
+
+.winner-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.winner-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  background: #0f0f1a;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.winner-card:hover {
+  background: #2a2a3e;
+}
+
+.winner-card-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.winner-card-prices {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  font-size: 0.85rem;
+}
+
+.winner-current {
+  color: #e0e0e0;
+}
+
+.winner-saving {
+  font-weight: 600;
+}
+
+/* Empty state */
+.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #666;
+}
+
+h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Get Started */
+.get-started {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.get-started-intro {
+  color: #aaa;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.step {
+  display: flex;
+  gap: 1rem;
+  background: #1a1a2e;
+  border: 1px solid #2a2a3e;
+  border-radius: 8px;
+  padding: 1.2rem;
+}
+
+.step-number {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #4fc3f7;
+  color: #0f0f1a;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.step-content h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.step-content p {
+  color: #aaa;
+  margin: 0 0 0.7rem;
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.step-content code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+
+.step-list {
+  color: #ccc;
+  margin: 0 0 0.7rem;
+  padding-left: 1.2rem;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.step-btn {
+  display: inline-block;
+  text-decoration: none;
+  margin-top: 0.3rem;
+}
+
+a.step-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  background: #4fc3f7;
+  color: #0f0f1a;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: 1px solid #4fc3f7;
+  cursor: pointer;
+}
+
+a.step-btn:hover {
+  background: #81d4fa;
+}
+
+/* Gist Sync */
+.gist-sync-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sync-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  width: 100%;
+  margin-bottom: 0.3rem;
+}
+
+.sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #888;
+}
+
+.sync-indicator.synced .sync-dot { background: #66bb6a; }
+.sync-indicator.syncing .sync-dot { background: #ffa726; animation: pulse 1s infinite; }
+.sync-indicator.error .sync-dot { background: #ef5350; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.gist-token-setup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sync-help {
+  font-size: 0.85rem;
+  color: #aaa;
+  margin: 0;
+}
+
+.sync-help code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+
+.token-input-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.token-input-row input {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid #333;
+  background: #1a1a2e;
+  color: #eee;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card-list-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+
+  .summary-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  table {
+    font-size: 0.75rem;
+  }
+
+  th, td {
+    padding: 0.4rem;
+  }
+}
