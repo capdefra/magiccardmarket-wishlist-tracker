@@ -31,10 +31,11 @@ export function mergeNewPrices(
 
     const existingPrices = merged.cards[cardName].prices;
     for (const entry of entries) {
-      const isDuplicate = existingPrices.some(
-        (p) => p.date === entry.date && p.price === entry.price && p.delivery === entry.delivery
-      );
-      if (!isDuplicate) {
+      // One entry per card per day — replace existing entry for the same date
+      const existingIdx = existingPrices.findIndex((p) => p.date === entry.date);
+      if (existingIdx !== -1) {
+        existingPrices[existingIdx] = entry;
+      } else {
         existingPrices.push(entry);
       }
     }

@@ -16,6 +16,9 @@ export function DataSync({ data, onReplace, onClear, syncStatus, onForceSync }: 
   const [tokenInput, setTokenInput] = useState('');
   const [tokenError, setTokenError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
+  const [editorValue, setEditorValue] = useState('');
+  const [editorError, setEditorError] = useState('');
 
   const hasToken = !!getToken();
 
@@ -97,8 +100,24 @@ export function DataSync({ data, onReplace, onClear, syncStatus, onForceSync }: 
   const handleDisconnect = () => {
     if (confirm('Disconnect GitHub sync? Your local data will be kept.')) {
       clearToken();
-      // Force re-render
       setTokenInput('');
+    }
+  };
+
+  const openEditor = () => {
+    setEditorValue(exportToJSON(data));
+    setEditorError('');
+    setShowEditor(true);
+  };
+
+  const handleEditorSave = () => {
+    try {
+      const parsed = importFromJSON(editorValue);
+      onReplace(parsed);
+      setShowEditor(false);
+      setEditorError('');
+    } catch (err) {
+      setEditorError(err instanceof Error ? err.message : 'Invalid JSON');
     }
   };
 
@@ -174,12 +193,41 @@ export function DataSync({ data, onReplace, onClear, syncStatus, onForceSync }: 
           />
         </div>
         <div className="sync-group">
+          <h3>Edit Data</h3>
+          <button onClick={openEditor}>Edit JSON</button>
+        </div>
+        <div className="sync-group">
           <h3>Danger Zone</h3>
           <button onClick={handleClear} className="btn-danger" disabled={cardCount === 0}>
             Clear All Data
           </button>
         </div>
       </div>
+
+      {showEditor && (
+        <div className="modal-overlay" onClick={() => setShowEditor(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Edit Tracker Data</h3>
+              <button className="btn-small" onClick={() => setShowEditor(false)}>✕</button>
+            </div>
+            <textarea
+              className="json-editor"
+              value={editorValue}
+              onChange={(e) => {
+                setEditorValue(e.target.value);
+                setEditorError('');
+              }}
+              spellCheck={false}
+            />
+            {editorError && <p className="error">{editorError}</p>}
+            <div className="modal-actions">
+              <button onClick={() => setShowEditor(false)}>Cancel</button>
+              <button className="btn-primary" onClick={handleEditorSave}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
