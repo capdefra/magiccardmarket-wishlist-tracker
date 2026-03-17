@@ -29,16 +29,12 @@ export function mergeNewPrices(
       merged.cards[cardName] = { prices: [] };
     }
 
-    const existingPrices = merged.cards[cardName].prices;
-    for (const entry of entries) {
-      // One entry per card per day — replace existing entry for the same date
-      const existingIdx = existingPrices.findIndex((p) => p.date === entry.date);
-      if (existingIdx !== -1) {
-        existingPrices[existingIdx] = entry;
-      } else {
-        existingPrices.push(entry);
-      }
-    }
+    // Remove all existing entries for dates present in the new data, then add new ones
+    const newDates = new Set(entries.map((e) => e.date));
+    merged.cards[cardName].prices = merged.cards[cardName].prices.filter(
+      (p) => !newDates.has(p.date)
+    );
+    merged.cards[cardName].prices.push(...entries);
 
     // Sort by date
     merged.cards[cardName].prices.sort((a, b) => a.date.localeCompare(b.date));
