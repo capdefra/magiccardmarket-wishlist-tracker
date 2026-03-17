@@ -43,6 +43,26 @@ export function mergeNewPrices(
   return merged;
 }
 
+export function deduplicateData(data: TrackerData): { data: TrackerData; removed: number } {
+  let removed = 0;
+  const deduped: TrackerData = { cards: {} };
+
+  for (const [cardName, card] of Object.entries(data.cards)) {
+    const seen = new Map<string, PriceEntry>();
+    for (const entry of card.prices) {
+      // Keep last entry per date
+      if (seen.has(entry.date)) {
+        removed++;
+      }
+      seen.set(entry.date, entry);
+    }
+    const prices = Array.from(seen.values()).sort((a, b) => a.date.localeCompare(b.date));
+    deduped.cards[cardName] = { prices };
+  }
+
+  return { data: deduped, removed };
+}
+
 export function exportToJSON(data: TrackerData): string {
   return JSON.stringify(data, null, 2);
 }

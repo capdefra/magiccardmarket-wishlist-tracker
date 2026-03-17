@@ -39,24 +39,21 @@ export function useCardData() {
     setSyncStatus('syncing');
     loadFromGist(token)
       .then((remote) => {
-        // Merge remote into local
         const local = loadData();
-        const allPrices: Record<string, PriceEntry[]> = {};
+        // Merge remote into local
+        const remotePrices: Record<string, PriceEntry[]> = {};
         for (const [name, card] of Object.entries(remote.cards)) {
-          allPrices[name] = card.prices;
+          remotePrices[name] = card.prices;
         }
-        const merged = mergeNewPrices(local, allPrices);
-        // Also merge local into remote (in case local has data remote doesn't)
+        const merged = mergeNewPrices(local, remotePrices);
+        // Merge local into merged (for cards only in local)
+        const localPrices: Record<string, PriceEntry[]> = {};
         for (const [name, card] of Object.entries(local.cards)) {
-          if (!allPrices[name]) allPrices[name] = [];
-          for (const p of card.prices) {
-            allPrices[name].push(p);
-          }
+          localPrices[name] = card.prices;
         }
-        const fullyMerged = mergeNewPrices(merged, allPrices);
+        const fullyMerged = mergeNewPrices(merged, localPrices);
         saveData(fullyMerged);
         setData(fullyMerged);
-        // Push merged result back to Gist
         saveToGist(token, fullyMerged).catch(() => {});
         setSyncStatus('synced');
       })

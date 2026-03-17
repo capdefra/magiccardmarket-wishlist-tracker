@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { TrackerData, PriceEntry } from '../types';
-import { exportToJSON, importFromJSON, downloadJSON, mergeNewPrices } from '../utils/storage';
+import { exportToJSON, importFromJSON, downloadJSON, mergeNewPrices, deduplicateData } from '../utils/storage';
 import { getToken, setToken, clearToken, validateToken } from '../utils/gist';
 
 interface Props {
@@ -104,6 +104,16 @@ export function DataSync({ data, onReplace, onClear, syncStatus, onForceSync }: 
     }
   };
 
+  const handleDeduplicate = () => {
+    const { data: cleaned, removed } = deduplicateData(data);
+    if (removed === 0) {
+      alert('No duplicates found!');
+      return;
+    }
+    onReplace(cleaned);
+    alert(`Removed ${removed} duplicate entries.`);
+  };
+
   const openEditor = () => {
     setEditorValue(exportToJSON(data));
     setEditorError('');
@@ -195,6 +205,7 @@ export function DataSync({ data, onReplace, onClear, syncStatus, onForceSync }: 
         <div className="sync-group">
           <h3>Edit Data</h3>
           <button onClick={openEditor}>Edit JSON</button>
+          <button onClick={handleDeduplicate}>Deduplicate</button>
         </div>
         <div className="sync-group">
           <h3>Danger Zone</h3>
