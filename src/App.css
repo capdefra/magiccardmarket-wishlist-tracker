@@ -396,7 +396,7 @@ tr.clickable:hover {
 
 .winners-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 }
 
@@ -411,6 +411,14 @@ tr.clickable:hover {
   font-size: 0.9rem;
   color: #4fc3f7;
   margin-bottom: 0.3rem;
+}
+
+.winner-section.good h3 {
+  color: #66bb6a;
+}
+
+.winner-section.bad h3 {
+  color: #ef5350;
 }
 
 .winner-desc {
@@ -727,6 +735,10 @@ a.step-btn:hover {
 
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .winners-grid {
+    grid-template-columns: 1fr;
   }
 
   table {

@@ -10,7 +10,8 @@ interface Props {
 interface WinnerMetric {
   label: string;
   description: string;
-  cards: { stats: CardStats; saving: number }[];
+  type: 'good' | 'bad';
+  cards: { stats: CardStats; delta: number }[];
 }
 
 export function Winners({ data, onSelectCard }: Props) {
@@ -23,61 +24,69 @@ export function Winners({ data, onSelectCard }: Props) {
 
     if (activeStats.length === 0) return [];
 
-    // Vs last import (previous entry) — using total (price + delivery)
-    const vsLastImport = activeStats
-      .filter((s) => s.priceDiff !== null)
-      .map((s) => ({ stats: s, saving: -(s.priceDiff!) }))
-      .sort((a, b) => b.saving - a.saving);
+    const result: WinnerMetric[] = [];
 
-    // Vs all-time high
-    const vsAllTimeHigh = activeStats
-      .map((s) => ({ stats: s, saving: s.maxTotal - s.latestTotal }))
-      .filter((s) => s.saving > 0)
-      .sort((a, b) => b.saving - a.saving);
+    // === WINNERS (good — prices dropping) ===
 
-    // Vs average (below average = good time to buy)
-    const vsBelowAverage = activeStats
-      .map((s) => ({ stats: s, saving: s.avgTotal - s.latestTotal }))
-      .filter((s) => s.saving > 0)
-      .sort((a, b) => b.saving - a.saving);
+    // Vs last import (previous entry) — drops
+    const dropsVsLast = activeStats
+      .filter((s) => s.priceDiff !== null && s.priceDiff < 0)
+      .map((s) => ({ stats: s, delta: s.priceDiff! }))
+      .sort((a, b) => a.delta - b.delta);
+
+    if (dropsVsLast.length > 0) {
+      result.push({
+        label: 'Biggest Drops vs Last Import',
+        description: 'Cards that dropped the most since previous check',
+        type: 'good',
+        cards: dropsVsLast.slice(0, 5),
+      });
+    }
 
     // At all-time low
     const atAllTimeLow = activeStats
       .filter((s) => s.latestTotal <= s.minTotal && s.entries >= 2)
-      .map((s) => ({ stats: s, saving: s.maxTotal - s.latestTotal }))
-      .sort((a, b) => b.saving - a.saving);
-
-    const result: WinnerMetric[] = [];
-
-    if (vsLastImport.filter((c) => c.saving > 0).length > 0) {
-      result.push({
-        label: 'Biggest Drops vs Last Import',
-        description: 'Cards that dropped the most since previous check',
-        cards: vsLastImport.filter((c) => c.saving > 0).slice(0, 5),
-      });
-    }
-
-    if (vsBelowAverage.length > 0) {
-      result.push({
-        label: 'Below Average Price',
-        description: 'Cards currently priced below their historical average',
-        cards: vsBelowAverage.slice(0, 5),
-      });
-    }
-
-    if (vsAllTimeHigh.length > 0) {
-      result.push({
-        label: 'Biggest Drop from Peak',
-        description: 'Cards furthest below their all-time high',
-        cards: vsAllTimeHigh.slice(0, 5),
-      });
-    }
+      .map((s) => ({ stats: s, delta: -(s.maxTotal - s.latestTotal) }))
+      .sort((a, b) => a.delta - b.delta);
 
     if (atAllTimeLow.length > 0) {
       result.push({
         label: 'At All-Time Low',
         description: 'Cards currently at their lowest recorded price',
+        type: 'good',
         cards: atAllTimeLow.slice(0, 5),
+      });
+    }
+
+    // === LOSERS (bad — prices rising) ===
+
+    // Vs last import — spikes
+    const spikesVsLast = activeStats
+      .filter((s) => s.priceDiff !== null && s.priceDiff > 0)
+      .map((s) => ({ stats: s, delta: s.priceDiff! }))
+      .sort((a, b) => b.delta - a.delta);
+
+    if (spikesVsLast.length > 0) {
+      result.push({
+        label: 'Biggest Spikes vs Last Import',
+        description: 'Cards that rose the most since previous check — buy before they climb further',
+        type: 'bad',
+        cards: spikesVsLast.slice(0, 5),
+      });
+    }
+
+    // Above average
+    const aboveAverage = activeStats
+      .map((s) => ({ stats: s, delta: s.latestTotal - s.avgTotal }))
+      .filter((s) => s.delta > 0)
+      .sort((a, b) => b.delta - a.delta);
+
+    if (aboveAverage.length > 0) {
+      result.push({
+        label: 'Above Average Price',
+        description: 'Cards currently priced above their historical average — consider waiting',
+        type: 'bad',
+        cards: aboveAverage.slice(0, 5),
       });
     }
 
@@ -97,11 +106,11 @@ export function Winners({ data, onSelectCard }: Props) {
       <h2>Best Time to Buy</h2>
       <div className="winners-grid">
         {metrics.map((metric) => (
-          <div key={metric.label} className="winner-section">
+          <div key={metric.label} className={`winner-section ${metric.type}`}>
             <h3>{metric.label}</h3>
             <p className="winner-desc">{metric.description}</p>
             <div className="winner-cards">
-              {metric.cards.map(({ stats, saving }) => (
+              {metric.cards.map(({ stats, delta }) => (
                 <div
                   key={stats.name}
                   className="winner-card clickable"
@@ -110,8 +119,8 @@ export function Winners({ data, onSelectCard }: Props) {
                   <div className="winner-card-name">{stats.name}</div>
                   <div className="winner-card-prices">
                     <span className="winner-current">€{stats.latestTotal.toFixed(2)}</span>
-                    <span className="winner-saving price-down">
-                      -€{saving.toFixed(2)}
+                    <span className={delta < 0 ? 'winner-saving price-down' : 'winner-saving price-up'}>
+                      {delta < 0 ? '-' : '+'}€{Math.abs(delta).toFixed(2)}
                     </span>
                   </div>
                 </div>

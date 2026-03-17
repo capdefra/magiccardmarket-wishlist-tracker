@@ -13,7 +13,7 @@ interface Props {
 
 export function CardList({ data, onSelectCard, onDeleteCard }: Props) {
   const [search, setSearch] = useState('');
-  const [sortKey, setSortKey] = useState<SortKey>('name');
+  const [sortKey, setSortKey] = useState<SortKey>('priceChange');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [showPurchased, setShowPurchased] = useState(false);
 
