@@ -242,6 +242,80 @@ tr.clickable:hover {
 }
 
 /* Card Detail */
+.card-detail-header {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.card-image-col {
+  flex-shrink: 0;
+  width: 200px;
+}
+
+.card-image {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.card-image-placeholder {
+  width: 200px;
+  height: 280px;
+  background: #1a1a2e;
+  border: 1px solid #2a2a3e;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  font-size: 0.85rem;
+}
+
+.card-info-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-info-col h2 {
+  margin-bottom: 0.8rem;
+}
+
+.card-info {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.card-info-row {
+  display: flex;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.card-info-row.oracle {
+  align-items: flex-start;
+}
+
+.card-info-label {
+  color: #888;
+  font-weight: 600;
+  min-width: 50px;
+  flex-shrink: 0;
+}
+
+.oracle-text {
+  white-space: pre-line;
+  color: #ccc;
+}
+
+.rarity-common { color: #aaa; text-transform: capitalize; }
+.rarity-uncommon { color: #c0c0c0; text-transform: capitalize; }
+.rarity-rare { color: #e6c654; text-transform: capitalize; }
+.rarity-mythic { color: #e65c00; text-transform: capitalize; }
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -731,6 +805,20 @@ a.step-btn:hover {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.3rem;
+  }
+
+  .card-detail-header {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .card-image-col {
+    width: 160px;
+  }
+
+  .card-image-placeholder {
+    width: 160px;
+    height: 224px;
   }
 
   .stats-grid {
