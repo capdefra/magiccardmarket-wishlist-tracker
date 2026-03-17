@@ -28,9 +28,11 @@ export function Winners({ data, onSelectCard }: Props) {
 
     // === WINNERS (good — prices dropping) ===
 
+    const MIN_DELTA = 0.01;
+
     // Vs last import (previous entry) — drops
     const dropsVsLast = activeStats
-      .filter((s) => s.priceDiff !== null && s.priceDiff < 0)
+      .filter((s) => s.priceDiff !== null && s.priceDiff < -MIN_DELTA)
       .map((s) => ({ stats: s, delta: s.priceDiff! }))
       .sort((a, b) => a.delta - b.delta);
 
@@ -45,8 +47,9 @@ export function Winners({ data, onSelectCard }: Props) {
 
     // At all-time low
     const atAllTimeLow = activeStats
-      .filter((s) => s.latestTotal <= s.minTotal && s.entries >= 2)
+      .filter((s) => s.latestTotal <= s.minTotal + MIN_DELTA && s.entries >= 2)
       .map((s) => ({ stats: s, delta: -(s.maxTotal - s.latestTotal) }))
+      .filter((s) => Math.abs(s.delta) > MIN_DELTA)
       .sort((a, b) => a.delta - b.delta);
 
     if (atAllTimeLow.length > 0) {
@@ -62,7 +65,7 @@ export function Winners({ data, onSelectCard }: Props) {
 
     // Vs last import — spikes
     const spikesVsLast = activeStats
-      .filter((s) => s.priceDiff !== null && s.priceDiff > 0)
+      .filter((s) => s.priceDiff !== null && s.priceDiff > MIN_DELTA)
       .map((s) => ({ stats: s, delta: s.priceDiff! }))
       .sort((a, b) => b.delta - a.delta);
 
@@ -78,7 +81,7 @@ export function Winners({ data, onSelectCard }: Props) {
     // Above average
     const aboveAverage = activeStats
       .map((s) => ({ stats: s, delta: s.latestTotal - s.avgTotal }))
-      .filter((s) => s.delta > 0)
+      .filter((s) => s.delta > MIN_DELTA)
       .sort((a, b) => b.delta - a.delta);
 
     if (aboveAverage.length > 0) {
