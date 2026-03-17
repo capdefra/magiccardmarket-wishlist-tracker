@@ -55,31 +55,36 @@ export function calculateCardStats(
 export function calculateTotalCostByDate(
   cards: Record<string, CardData>,
   activeCardNames: string[]
-): { date: string; total: number }[] {
+): { date: string; total: number; cardCount: number }[] {
   const relevantCards = Object.fromEntries(
     Object.entries(cards).filter(([name]) => activeCardNames.includes(name))
   );
 
-  const dateSet = new Set<string>();
+  // Find dates where ALL active cards have an entry (consistent comparison)
+  const dateCountMap = new Map<string, number>();
   for (const card of Object.values(relevantCards)) {
     for (const p of card.prices) {
-      dateSet.add(p.date);
+      dateCountMap.set(p.date, (dateCountMap.get(p.date) || 0) + 1);
     }
   }
 
-  const dates = Array.from(dateSet).sort();
-  const cardNames = Object.keys(relevantCards);
+  const totalCards = Object.keys(relevantCards).length;
+  // Only include dates where all active cards have data
+  const completeDates = Array.from(dateCountMap.entries())
+    .filter(([, count]) => count === totalCards)
+    .map(([date]) => date)
+    .sort();
 
-  return dates.map((date) => {
+  return completeDates.map((date) => {
     let total = 0;
-    for (const name of cardNames) {
-      const card = relevantCards[name];
-      const pricesUpToDate = card.prices.filter((p) => p.date <= date);
-      if (pricesUpToDate.length > 0) {
-        const entry = pricesUpToDate[pricesUpToDate.length - 1];
+    let cardCount = 0;
+    for (const card of Object.values(relevantCards)) {
+      const entry = card.prices.find((p) => p.date === date);
+      if (entry) {
         total += entryTotal(entry);
+        cardCount++;
       }
     }
-    return { date, total: Math.round(total * 100) / 100 };
+    return { date, total: Math.round(total * 100) / 100, cardCount };
   });
 }
