@@ -15,9 +15,10 @@ interface Props {
   data: { date: string; value: number }[];
   title?: string;
   height?: number;
+  format?: 'euro' | 'percent';
 }
 
-export function PriceChart({ data, title, height = 250 }: Props) {
+export function PriceChart({ data, title, height = 250, format = 'euro' }: Props) {
   if (data.length === 0) {
     return <p className="no-data">Not enough data for chart</p>;
   }
@@ -45,7 +46,12 @@ export function PriceChart({ data, title, height = 250 }: Props) {
     plugins: {
       tooltip: {
         callbacks: {
-          label: (ctx: { parsed: { y: number | null } }) => `€${(ctx.parsed.y ?? 0).toFixed(2)}`,
+          label: (ctx: { parsed: { y: number | null } }) => {
+            const v = ctx.parsed.y ?? 0;
+            return format === 'percent'
+              ? `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`
+              : `€${v.toFixed(2)}`;
+          },
         },
       },
     },
@@ -57,7 +63,8 @@ export function PriceChart({ data, title, height = 250 }: Props) {
       y: {
         ticks: {
           color: '#888',
-          callback: (val: string | number) => `€${val}`,
+          callback: (val: string | number) =>
+            format === 'percent' ? `${Number(val) >= 0 ? '+' : ''}${val}%` : `€${val}`,
         },
         grid: { color: '#2a2a3e' },
       },

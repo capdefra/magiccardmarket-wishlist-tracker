@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { TrackerData } from '../types';
-import { calculateTotalCostByDate, getActiveCardNames } from '../utils/stats';
+import { calculatePriceIndex, calculateCurrentTotal, getActiveCardNames } from '../utils/stats';
 import { PriceChart } from './PriceChart';
 
 interface Props {
@@ -9,37 +9,36 @@ interface Props {
 
 export function SummaryChart({ data }: Props) {
   const activeCardNames = useMemo(() => getActiveCardNames(data), [data]);
-  const totals = useMemo(
-    () => calculateTotalCostByDate(data.cards, activeCardNames),
+  const indexData = useMemo(
+    () => calculatePriceIndex(data.cards, activeCardNames),
     [data, activeCardNames]
   );
   const chartData = useMemo(
-    () => totals.map((t) => ({ date: t.date, value: t.total })),
-    [totals]
+    () => indexData.map((d) => ({ date: d.date, value: d.index })),
+    [indexData]
+  );
+  const currentTotal = useMemo(
+    () => calculateCurrentTotal(data.cards, activeCardNames),
+    [data, activeCardNames]
   );
 
-  if (totals.length === 0) return null;
+  if (indexData.length === 0) return null;
 
-  const latest = totals[totals.length - 1];
-  const first = totals[0];
-  const change = totals.length >= 2
-    ? ((latest.total - first.total) / first.total) * 100
-    : null;
+  const latest = indexData[indexData.length - 1];
 
   return (
     <div className="summary-chart">
       <div className="summary-header">
-        <h2>Total Wishlist Cost</h2>
+        <h2>Wishlist Price Index</h2>
         <div className="summary-stats">
-          <span className="summary-total">€{latest.total.toFixed(2)}</span>
-          {change !== null && (
-            <span className={change < 0 ? 'price-down' : change > 0 ? 'price-up' : ''}>
-              {change >= 0 ? '+' : ''}{change.toFixed(1)}%
-            </span>
-          )}
+          <span className="summary-total">€{currentTotal.toFixed(2)}</span>
+          <span className={latest.index < 0 ? 'price-down' : latest.index > 0 ? 'price-up' : ''}>
+            {latest.index >= 0 ? '+' : ''}{latest.index.toFixed(1)}%
+          </span>
+          <span className="summary-card-count">{activeCardNames.length} cards</span>
         </div>
       </div>
-      <PriceChart data={chartData} title="Total Cost Over Time" height={250} />
+      <PriceChart data={chartData} title="Avg. Price Change From First Tracked" height={250} format="percent" />
     </div>
   );
 }

@@ -52,39 +52,60 @@ export function calculateCardStats(
   };
 }
 
-export function calculateTotalCostByDate(
+export function calculatePriceIndex(
   cards: Record<string, CardData>,
   activeCardNames: string[]
-): { date: string; total: number; cardCount: number }[] {
-  const relevantCards = Object.fromEntries(
-    Object.entries(cards).filter(([name]) => activeCardNames.includes(name))
+): { date: string; index: number; cardCount: number }[] {
+  const relevantCards = Object.entries(cards).filter(([name]) =>
+    activeCardNames.includes(name)
   );
 
-  // Find dates where ALL active cards have an entry (consistent comparison)
-  const dateCountMap = new Map<string, number>();
-  for (const card of Object.values(relevantCards)) {
-    for (const p of card.prices) {
-      dateCountMap.set(p.date, (dateCountMap.get(p.date) || 0) + 1);
+  if (relevantCards.length === 0) return [];
+
+  // For each card, baseline = its first entry total
+  const baselines = new Map<string, number>();
+  for (const [name, card] of relevantCards) {
+    if (card.prices.length > 0) {
+      baselines.set(name, entryTotal(card.prices[0]));
     }
   }
 
-  const totalCards = Object.keys(relevantCards).length;
-  // Only include dates where all active cards have data
-  const completeDates = Array.from(dateCountMap.entries())
-    .filter(([, count]) => count === totalCards)
-    .map(([date]) => date)
-    .sort();
+  // Collect all unique dates
+  const allDates = new Set<string>();
+  for (const [, card] of relevantCards) {
+    for (const p of card.prices) {
+      allDates.add(p.date);
+    }
+  }
+  const sortedDates = Array.from(allDates).sort();
 
-  return completeDates.map((date) => {
-    let total = 0;
+  return sortedDates.map((date) => {
+    let totalPctChange = 0;
     let cardCount = 0;
-    for (const card of Object.values(relevantCards)) {
+
+    for (const [name, card] of relevantCards) {
       const entry = card.prices.find((p) => p.date === date);
-      if (entry) {
-        total += entryTotal(entry);
+      const baseline = baselines.get(name);
+      if (entry && baseline && baseline > 0) {
+        totalPctChange += ((entryTotal(entry) - baseline) / baseline) * 100;
         cardCount++;
       }
     }
-    return { date, total: Math.round(total * 100) / 100, cardCount };
-  });
+
+    const index = cardCount > 0 ? Math.round((totalPctChange / cardCount) * 100) / 100 : 0;
+    return { date, index, cardCount };
+  }).filter((d) => d.cardCount > 0);
+}
+
+export function calculateCurrentTotal(
+  cards: Record<string, CardData>,
+  activeCardNames: string[]
+): number {
+  let total = 0;
+  for (const [name, card] of Object.entries(cards)) {
+    if (activeCardNames.includes(name) && card.prices.length > 0) {
+      total += entryTotal(card.prices[card.prices.length - 1]);
+    }
+  }
+  return Math.round(total * 100) / 100;
 }
