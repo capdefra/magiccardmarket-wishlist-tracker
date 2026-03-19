@@ -40,6 +40,17 @@ export function PriceChart({ data, title, height = 250, format = 'euro' }: Props
     ],
   };
 
+  // For percent format, force y-axis to be symmetric around 0
+  const values = data.map((d) => d.value);
+  const yScaleExtra =
+    format === 'percent' && values.length > 0
+      ? (() => {
+          const maxAbs = Math.max(...values.map((v) => Math.abs(v)), 0.01);
+          const padded = Math.ceil(maxAbs * 20) / 20; // round up to nearest 0.05
+          return { min: -padded, max: padded };
+        })()
+      : {};
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -61,10 +72,15 @@ export function PriceChart({ data, title, height = 250, format = 'euro' }: Props
         grid: { color: '#2a2a3e' },
       },
       y: {
+        ...yScaleExtra,
         ticks: {
           color: '#888',
-          callback: (val: string | number) =>
-            format === 'percent' ? `${Number(val) >= 0 ? '+' : ''}${val}%` : `€${val}`,
+          callback: (val: string | number) => {
+            const n = Number(val);
+            return format === 'percent'
+              ? `${n >= 0 ? '+' : ''}${n.toFixed(2)}%`
+              : `€${n}`;
+          },
         },
         grid: { color: '#2a2a3e' },
       },
