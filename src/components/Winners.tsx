@@ -41,7 +41,7 @@ export function Winners({ data, onSelectCard }: Props) {
         label: 'Biggest Drops vs Last Import',
         description: 'Cards that dropped the most since previous check',
         type: 'good',
-        cards: dropsVsLast.slice(0, 5),
+        cards: dropsVsLast.slice(0, 10),
       });
     }
 
@@ -57,7 +57,7 @@ export function Winners({ data, onSelectCard }: Props) {
         label: 'At All-Time Low',
         description: 'Cards currently at their lowest recorded price',
         type: 'good',
-        cards: atAllTimeLow.slice(0, 5),
+        cards: atAllTimeLow.slice(0, 10),
       });
     }
 
@@ -74,7 +74,7 @@ export function Winners({ data, onSelectCard }: Props) {
         label: 'Biggest Spikes vs Last Import',
         description: 'Cards that rose the most since previous check — buy before they climb further',
         type: 'bad',
-        cards: spikesVsLast.slice(0, 5),
+        cards: spikesVsLast.slice(0, 10),
       });
     }
 
@@ -89,7 +89,7 @@ export function Winners({ data, onSelectCard }: Props) {
         label: 'Above Average Price',
         description: 'Cards currently priced above their historical average — consider waiting',
         type: 'bad',
-        cards: aboveAverage.slice(0, 5),
+        cards: aboveAverage.slice(0, 10),
       });
     }
 
