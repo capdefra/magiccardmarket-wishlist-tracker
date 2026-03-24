@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { TrackerData } from '../types';
 import { calculateCardStats, getActiveCardNames } from '../utils/stats';
 
-type SortKey = 'name' | 'latestTotal' | 'priceChange' | 'minTotal' | 'maxTotal' | 'avgTotal';
+type SortKey = 'name' | 'latestTotal' | 'priceChange' | 'priceDiff' | 'minTotal' | 'maxTotal' | 'avgTotal';
 type SortDir = 'asc' | 'desc';
 
 interface Props {
@@ -147,7 +147,8 @@ export function CardList({ data, onSelectCard, onDeleteCard }: Props) {
                 <th onClick={() => handleSort('minTotal')}>Min{sortIndicator('minTotal')}</th>
                 <th onClick={() => handleSort('maxTotal')}>Max{sortIndicator('maxTotal')}</th>
                 <th onClick={() => handleSort('avgTotal')}>Avg{sortIndicator('avgTotal')}</th>
-                <th onClick={() => handleSort('priceChange')}>Change{sortIndicator('priceChange')}</th>
+                <th onClick={() => handleSort('priceDiff')}>+/-€{sortIndicator('priceDiff')}</th>
+                <th onClick={() => handleSort('priceChange')}>+/-%{sortIndicator('priceChange')}</th>
                 <th>#</th>
                 <th></th>
               </tr>
@@ -160,6 +161,9 @@ export function CardList({ data, onSelectCard, onDeleteCard }: Props) {
                   <td className="price-min">€{s.minTotal.toFixed(2)}</td>
                   <td className="price-max">€{s.maxTotal.toFixed(2)}</td>
                   <td>€{s.avgTotal.toFixed(2)}</td>
+                  <td className={priceChangeClass(s.priceDiff)}>
+                    {formatEuroChange(s.priceDiff)}
+                  </td>
                   <td className={priceChangeClass(s.priceChange)}>
                     {formatPriceChange(s.priceChange)}
                   </td>
@@ -173,7 +177,7 @@ export function CardList({ data, onSelectCard, onDeleteCard }: Props) {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan={8} className="no-data">No cards match your search.</td></tr>
+                <tr><td colSpan={9} className="no-data">No cards match your search.</td></tr>
               )}
             </tbody>
           </table>
@@ -181,6 +185,12 @@ export function CardList({ data, onSelectCard, onDeleteCard }: Props) {
       </div>
     </div>
   );
+}
+
+function formatEuroChange(diff: number | null): string {
+  if (diff === null) return '-';
+  const sign = diff >= 0 ? '+' : '';
+  return `${sign}€${diff.toFixed(2)}`;
 }
 
 function formatPriceChange(change: number | null): string {

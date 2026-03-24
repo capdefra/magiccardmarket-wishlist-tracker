@@ -80,19 +80,23 @@ export function calculatePriceIndex(
   const sortedDates = Array.from(allDates).sort();
 
   return sortedDates.map((date) => {
-    let totalPctChange = 0;
+    let totalBaseline = 0;
+    let totalCurrent = 0;
     let cardCount = 0;
 
     for (const [name, card] of relevantCards) {
       const entry = card.prices.find((p) => p.date === date);
       const baseline = baselines.get(name);
       if (entry && baseline && baseline > 0) {
-        totalPctChange += ((entryTotal(entry) - baseline) / baseline) * 100;
+        totalBaseline += baseline;
+        totalCurrent += entryTotal(entry);
         cardCount++;
       }
     }
 
-    const index = cardCount > 0 ? Math.round((totalPctChange / cardCount) * 100) / 100 : 0;
+    const index = totalBaseline > 0
+      ? Math.round(((totalCurrent - totalBaseline) / totalBaseline) * 10000) / 100
+      : 0;
     return { date, index, cardCount };
   }).filter((d) => d.cardCount > 0);
 }
