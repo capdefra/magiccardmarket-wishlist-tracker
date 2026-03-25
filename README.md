@@ -76,13 +76,13 @@ interface PriceEntry {
 
 ## Price Index Calculation
 
-The main chart shows **value-weighted** percentage change from the first tracked date:
+The main chart shows a **value-weighted** percentage change from each card's first tracked price, centered at 0:
 
-1. For each date, sum the total cost (price + delivery) of all active cards
-2. Compare against the baseline (first date's total)
-3. Result: `(currentTotal - baselineTotal) / baselineTotal`
+1. Each card's baseline is its first entry's total cost (price + delivery)
+2. For each date, sum the baselines and current totals of all cards that have an entry on that date
+3. Result: `((sumCurrentTotals - sumBaselines) / sumBaselines) * 100`
 
-This means a 10% increase on a 100 EUR card has more impact than a 10% increase on a 1 EUR card.
+A value of **+5** means prices are up 5% on average; **-3** means down 3%. Because it's value-weighted, a 10% swing on a €50 card has more influence than a 10% swing on a €1 card. Cards are only included on dates where they have data, so adding or removing cards doesn't distort history.
 
 ## GitHub Gist Sync
 
