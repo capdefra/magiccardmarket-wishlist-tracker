@@ -1,4 +1,5 @@
-import { PriceEntry } from '../types';
+import type { PriceEntry } from '../types';
+import { parsePrice } from './parsePrice.ts';
 
 export interface ParsedRow {
   cardName: string;
@@ -30,18 +31,18 @@ export function parseCSV(text: string): ParsedRow[] {
     if (hasDelivery) {
       if (fields.length < 4) continue;
       const cardName = fields[0];
-      const price = parseFloat(fields[1]);
-      const delivery = parseFloat(fields[2]);
+      const price = parsePrice(fields[1]);
+      const delivery = parsePrice(fields[2]);
       const date = fields[3];
-      if (!cardName || isNaN(price) || isNaN(delivery) || !isValidDate(date)) continue;
+      if (!cardName || Number.isNaN(price) || Number.isNaN(delivery) || !isValidDate(date)) continue;
       rows.push({ cardName, price, delivery, date });
     } else {
       // Legacy format without delivery
       if (fields.length < 3) continue;
       const cardName = fields[0];
-      const price = parseFloat(fields[1]);
+      const price = parsePrice(fields[1]);
       const date = fields[2];
-      if (!cardName || isNaN(price) || !isValidDate(date)) continue;
+      if (!cardName || Number.isNaN(price) || !isValidDate(date)) continue;
       rows.push({ cardName, price, delivery: 0, date });
     }
   }
